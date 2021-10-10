@@ -13,12 +13,7 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-<style>
-  img{
-  width: 12vw;
-  height: 12vh;
-  }
-</style>
+
 
 # It looks like you found me 😄
 Choose your language (Escolha seu idioma)
