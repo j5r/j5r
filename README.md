@@ -46,6 +46,7 @@ Meu nome é Junior R. Ribeiro, formado em Matemática Licenciatura Plena pela Un
   - [Minha Página](http://tiny.cc/j5r)
 
 
+----
 
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=j5r&label=Profile%20views&color=0e75b6&style=flat" alt="j5r" /> </p>
 
