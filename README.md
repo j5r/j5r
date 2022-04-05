@@ -20,6 +20,8 @@ Choose your language (Escolha seu idioma)
  - [en](#english)
  - [pt-br](#português-brasileiro)
 
+### Contact me
+![./e-mail.svg](./e-mail.svg) ![./whats-app.svg](./whats-app.svg) ![./home-page.svg](./home-page.svg)
 
 ----
 # English
