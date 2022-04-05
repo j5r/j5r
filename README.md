@@ -21,7 +21,7 @@ Choose your language (Escolha seu idioma)
  - [pt-br](#português-brasileiro)
 
 ### Contact me
-![./e-mail.svg](./e-mail.svg) ![./home-page.svg](./home-page.svg) 
+![./email.pdf](./email.pdf) ![./homepage.pdf](./homepage.pdf) 
 
 ----
 # English
