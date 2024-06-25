@@ -23,14 +23,11 @@ class Conversor:
         if val < 0:
             raise ValueError("[val] must be nonnegative.")
         s = ""
-        print(val)
         while val > 0:
             res = val % len(Conversor.__SEQUENCE)
             s += Conversor.__SEQUENCE[res]
             val -= res
             val //= len(Conversor.__SEQUENCE)
-            print(f"{val%1000:04d}",end="\r")
-        print(val,res)
         return s[::-1]
 
     def cypher2int(self, cp: str) -> int:
@@ -107,14 +104,4 @@ class Conversor:
 
 
 
-if __name__ == "__main__":
-    c = Conversor(augmented=1)
-    with open("manutencao1.pdf","rb") as f:
-        ct = f.read()
-    ct = ct[:1000]
 
-    bt = c.bytes2cypher(ct)
-
-    print(ct)
-    print(bt)
-    print(".......",len(ct),len(bt))
