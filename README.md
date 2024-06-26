@@ -31,7 +31,6 @@ My name is Junior R. Ribeiro, I have bachelor's degree in Mathematics for teachi
 
  My medias:
   - [Curriculum Vitae Lattes](http://lattes.cnpq.br/3866983332299702)
-  - [Facebook](https://www.facebook.com/JrRodRib)  
   - [Linkedin](https://www.linkedin.com/in/j5r)
   - [Home Page (In Portuguese)](https://j5r.github.io/home)
 
@@ -43,7 +42,6 @@ Meu nome é Junior R. Ribeiro, formado em Matemática Licenciatura Plena pela Un
  
  Minhas coisas:
   - [Curriculum Vitae Lattes](http://lattes.cnpq.br/3866983332299702)
-  - [Facebook](https://www.facebook.com/JrRodRib)  
   - [Linkedin](https://www.linkedin.com/in/j5r)
   - [Minha Página](https://j5r.github.io/home)
 
