@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localização</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h1 { color: #333; font-size: 1.5rem; margin-bottom: 1rem; text-align: center; }
+        .campo { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; color: #666; font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        
+        .btn-colar { background-color: #9dd89d; margin-bottom: 1.5rem; color: #333;}
+        .btn-gerar { background-color: #28a745; font-weight: bold; }
+        
+        button { width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: opacity 0.3s; }
+        button:hover { opacity: 0.9; }
+        
+        .divider { text-align: center; margin: 10px 0; color: #aaa; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Localização</h1>
+    
+    <button class="btn-colar" onclick="colarDoClipboard()">📋 Colar link do Maps <br><strong style="color:#a82424">(clique aqui para colar)</strong></button>
+    
+    <div class="divider">OU PREENCHA MANUALMENTE</div>
+
+    <div class="campo">
+        <label>Latitude</label>
+        <input type="text" id="lat" placeholder="Ex: -20.5121" oninput="tratarInput(this)">
+    </div>
+    <div class="campo">
+        <label>Longitude</label>
+        <input type="text" id="lon" placeholder="Ex: -54.6698" oninput="tratarInput(this)">
+    </div>
+
+    <button class="btn-gerar" onclick="gerarPaginaB()">Gerar Links de App</button>
+</div>
+
+<script>
+    // Função para tratar entrada manual (vírgula por ponto)
+    function tratarInput(el) {
+        el.value = el.value.replace(',', '.');
+    }
+
+    // FUNÇÃO PARA LER O CLIPBOARD E EXTRAIR COORDENADAS
+    async function colarDoClipboard() {
+    try {
+        const texto = await navigator.clipboard.readText();
+        
+        // 1. Tenta o padrão de alta precisão (!3d...!4d) - Comum no Chrome/Desktop
+        const regexGoogle = /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g;
+        const matchesGoogle = [...texto.matchAll(regexGoogle)];
+
+        if (matchesGoogle.length > 0) {
+            const alvo = matchesGoogle[matchesGoogle.length - 1];
+            document.getElementById('lat').value = alvo[1];
+            document.getElementById('lon').value = alvo[2];
+            return; // Sai da função pois já resolveu
+        }
+
+        // 2. Fallback: Procura por qualquer par de números decimais - Comum no Android/Manual
+        // Busca números que podem ter sinal de menos e ponto decimal
+        const regexNumeros = /(-?\d+\.\d+)/g;
+        const todosNumeros = [...texto.matchAll(regexNumeros)];
+
+        if (todosNumeros.length >= 2) {
+            // Pegamos os dois últimos números encontrados (Latitude e Longitude)
+            // No Android, se você copiar "-20.529, -54.613", eles serão os únicos
+            const lon = todosNumeros[todosNumeros.length - 1][0];
+            const lat = todosNumeros[todosNumeros.length - 2][0];
+            
+            document.getElementById('lat').value = lat;
+            document.getElementById('lon').value = lon;
+        } else {
+            alert("Não encontrei coordenadas. Tente copiar os números decimais diretamente do Maps.");
+        }
+
+    } catch (err) {
+        alert("Erro ao ler área de transferência. Verifique as permissões.");
+    }
+}
+
+
+    // TEMPLATES DA PÁGINA B (MANTIDOS CONFORME O SEU PROJETO)
+    const __maps = `<a href="https://www.google.com/maps?q={lat},{long}"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAA7VBMVEX////k7vyFrfE0geoUceiStfeOtPIAZuYAbecac+gzffAqe/Odvflwm+cAa+pChfR+qff2qKHSOkYwb9j+9vbpJgvqPi/qQSdXacRRjfVCg/oajKz1/PL2t7PpNSTqQzWBaK7A2P8+kMkipTuz27zwf3f/06K1zPpAi9s0qFMsp052wYnubGLpODb3ngD/++M0plwtpk5btnL0jRz7vAT+89bf6f8qnnDpMy3xeCX80Gcgo0btVhb7ugD8y1H+6bulwWq+sg393pfauBil1LD8xTTsug1AqU9RsmpXq0nm9Op0rUDF5M3E05iSzKBcyPClAAAA70lEQVR4AWKgOQC0PhaJDcQwAFS6YWZmlsOM7pbD+f9zuvJNzuaWuRhG6HgznE7D5bBzbo/X6XP6/YHgowuFfRb+SCQSiOouFk84LRkh9NxkKp3JOp25HKXmC0UmS+VKulytAdQsV280mWylK5Vym26dQBdFj8l+ujIYjtRCxlhMppoczOYLui1XAjXZWm/m8y3dejvECS9b2s/nc/lumh8CEXdNvoqcE/JzgiSB80VWfqNyP6DxK+fy70BucgSd0VzOT6g4wwOmvCi1u4INt51yd7BlOkG2P+MsEMUZnnAXghflqTyRczzCc85neA3/bO8jQZ8yDjIAAAAASUVORK5CYII=">Google Maps</a>`;
+    const __waze = `<a href="https://waze.com/ul?ll={lat},{long}&navigate=yes"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAnFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAGBgYkJCQPDw8AAAAAAAAAAAARERGHh4ff39/////v7++bm5ssLCy/v78dHR0AAAAAAABAQEBjY2NTU1MvLy8AAACLi4sAAACPj4/Pz89eXl4vLy9fX18PDw+vr69vb28AAAA/Pz+fn59/f39PT08fHx8fHx9PT093d3cAAACsrKw9PT2OeT7UAAAANHRSTlMAMJDQ/+CgUPbg7nAQsPDu////9uj/6/Bg6+vt60D3IP//5P//////wP///+j/7f/wgPXnWPjZAAAAAVBJREFUeAGVkwVyxDAQBA1thngVhmNm+v/fUluW6zjQB4ZpseSc4no+ShBGzg2iAIiTJEnVyS7jvIDyoRLFPD6B757XHlA+ypHnF17fTvNX3o2c8QFHIw/4lEseeXUbIeRLrvnAt3mL2MgNXrBjKWjLLZ4JHKVDLDWmK5ZeT/+fiFTI6Nt8wNDmo5Eaj4R1F8ciSjViYESZwERL1G1MMU3Fs+ZuWFeVosIrco8EFfiHYKShuinMR1XTh4EosQo5qVgWzSjmjPSm0snu+CzFYgasxiLVEOb6/IDnBLA2cjRQGM1FKXEdLtZhvlkxm1R2wQOdpa3cwZS6FC705DbvTHWQO+LbxidBbrdTvBdzAJbmGJuv444L4X2Nctx47Rg/Px6ZVyxjDc24H0OheUPuc4V28Mj0NyFDQcfdoiY7psc2psfaXvPrs0uY623uqdoM8RsjPzADs0ZfiwAAAABJRU5ErkJggg==">Waze</a>`;
+    const __uber = `<a href="https://m.uber.com/ul/?action=setPickup&dropoff[latitude]={lat}&dropoff[longitude]={long}{nickname_param}"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACs0lEQVRYhc2Xv0sjURDHP5sfoo3BQjgkSlLYSLBTsBILKzvThFX80YSAYuMfcKDWNjbaGLDQcIXYi4X2NhGuSKFCgqIgeoKrZo3fK5LsRTfxzsNzb2CKt/PefL8z8+axA24ZBTLAd+AGKALPgN6pz5WzNxVfmYrvhvIFOPsLoPfqWQXLBf6vgV/rCxKfEXm9TADlunw2eFVH/cBXIPa6Jp8lPqDXK3Cg16DcJiGPCPwwKPdq0CMCtkH5wTA8IiCD8m30THy1i+7ubkzTdG0yTZNIJMLIyAh9fX0fTsLpy/n5eUly9askJZNJnZ6eKp1Of+hb8CIDtm03ZGnbNo+Pj9zf3wMQjUYb7g2Hw38cve/3W35JqVQiFothWRbHx8dIYn193bEvLi4iiXw+jyRmZmYAuLi44PDwEElMTEy4/DrpmJuba1iC6elpZbNZSVIikRCg4eFhSdLCwoLi8bgkaXBwUICSyaTj6/z8XIVCQdFo1OU7UMvEMN7uxqamJra2tshkMgDs7u6ysrLC+Pg4/f39FAoFpqamSKVS3N3dYds2y8vLGIZBOp3m5OTE5fNFCW5vbxuCl4PBuQNVsSyLYDBIIBDg4eEBy7KwLAuAtbU19vb28Pv9bwbmSvf29raz3tnZkSRNTk7q6OhIpVJJ4XDYsReLRa2urmp2dlaS1N7e7tg2NjYE6OrqSktLS3W7IPCajWmabG5uOhHncjmgnP6WlhZyuRz5fJ7r62va2to4ODgglUoBMDAwwOXlpWPb398HoLm5mUDABVU/A1WNx+MaGhoSoK6uLgWDQXV0dDj2sbEx9fT0uM6FQiElEglFIhHnW2dnp1pbW+vi/BdPsZcE5AOePCTw5AMsDwlYPmr+Tj2QMx+Q9ZBA1gd885CAg+3pYAL/wWhWJeHZcFornzqe/wReLF3cSdf4HAAAAABJRU5ErkJggg==">Uber</a>`;
+
+    const init = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selecionar Aplicativo</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background-color: #f9f9f9; padding: 20px; }
+    ul { display: flex; flex-direction: row; list-style-type: none; padding: 0; flex-wrap: wrap; justify-content: center; }
+    li { margin: 10px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 120px; }
+    a { align-items: center; display: flex; flex-direction: column; text-decoration: none; color: #333; font-weight: bold; font-size: 14px; }
+    img { width: 45px; margin-bottom: 8px; }
+    .acoes { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .btn-share { padding: 12px 20px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; width: 220px; }
+    .btn-voltar { padding: 8px 15px; border: none; background: #666; color: white; border-radius: 5px; cursor: pointer; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Para onde vamos?</h1>
+  <ul>***</ul> 
+  
+  <div class="acoes">
+    <button class="btn-share" onclick="compartilharLink()">🔗 Compartilhar este local</button>
+    <button class="btn-voltar" onclick="window.history.back()">Voltar e alterar</button>
+  </div>
+
+  <script>
+    function compartilharLink() {
+        const lat = "{lat_placeholder}";
+        const lon = "{lon_placeholder}";
+        
+        let nomeLocal = prompt("Dê um nome para este local (opcional):");
+        
+        // Montagem da URL tratando o caso de rodar direto do arquivo (origin null)
+        let urlBase = "";
+        if (window.location.origin === "null" || window.location.origin.includes("blob")) {
+            // Se estiver em Blob ou Local, você precisará ajustar para o seu domínio final
+            urlBase = "https://www.seuserver.com/localizacao.html";
+        } else {
+            urlBase = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + "/localizacao.html";
+        }
+        
+        let urlFinal = urlBase + "?lat=" + lat + "&long=" + lon;
+        if (nomeLocal && nomeLocal.trim() !== "") {
+            urlFinal += "&nome=" + encodeURIComponent(nomeLocal);
+        }
+
+        // Criar textarea para cópia (método infalível para Blobs)
+        const aux = document.createElement("textarea");
+        aux.value = urlFinal;
+        aux.setAttribute('readonly', '');
+        aux.style.position = 'absolute';
+        aux.style.left = '-9999px';
+        document.body.appendChild(aux);
+        aux.select();
+        aux.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+        try {
+            document.execCommand("copy");
+            alert("Link copiado com sucesso!\\n\\n" + urlFinal);
+        } catch (err) {
+            prompt("Copie o link abaixo:", urlFinal);
+        }
+        document.body.removeChild(aux);
+    }
+  <\/script>
+</body>
+</html>`;
+
+    function gerarPaginaB(nomeDaURL = "") {
+    const lat = document.getElementById('lat').value;
+    const long = document.getElementById('lon').value;
+
+    if (!lat || !long) return;
+
+    // Lógica do Nickname Uber
+    let parametroApelido = nomeDaURL ? `&dropoff[nickname]=${encodeURIComponent(nomeDaURL)}` : "";
+    const tituloB = nomeDaURL ? `Links para: ${nomeDaURL}` : "Direções";
+
+    // Substituições de links
+    const linksHtml = `
+        <li>${__maps.replace(/{lat}/g, lat).replace(/{long}/g, long)}</li>
+        <li>${__waze.replace(/{lat}/g, lat).replace(/{long}/g, long)}</li>
+        <li>${__uber.replace(/{lat}/g, lat).replace(/{long}/g, long).replace(/{nickname_param}/g, parametroApelido)}</li>
+    `;
+
+    // Injeção de dados no script da Página B para o botão compartilhar funcionar
+    let fullHtml = init
+        .replace("<h1>Para onde vamos?</h1>", `<h1>${tituloB}</h1>`)
+        .replace("***", linksHtml)
+        .replace("{lat_placeholder}", lat) // Injeta a lat no script da B
+        .replace("{lon_placeholder}", long); // Injeta a lon no script da B
+
+    const blob = new Blob([fullHtml], { type: 'text/html' });
+    window.location.href = URL.createObjectURL(blob);
+}
+
+// Esta função roda automaticamente assim que a página carrega
+window.onload = function() {
+    // 1. Pega os parâmetros da URL (ex: ?lat=-20.45&long=-54.65&nome=Casa)
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const lat = urlParams.get('lat');
+    const long = urlParams.get('long');
+    const nome = urlParams.get('nome');
+
+    // 2. Se a latitude e longitude existirem na URL...
+    if (lat && long) {
+        // Preenche os campos da Página A para que o usuário veja o que está acontecendo
+        document.getElementById('lat').value = lat;
+        document.getElementById('lon').value = long;
+        
+        // Se você quiser que o nome apareça na Página B, 
+        // podemos passar essa variável para a função de geração
+        console.log("Dados carregados via URL para:", nome || "Local não identificado");
+
+        // 3. Aguarda um pequeno instante (para garantir que o navegador está pronto) 
+        // e gera a Página B automaticamente
+        setTimeout(() => {
+            gerarPaginaB(nome); // Passamos o nome como opcional
+        }, 500);
+    }
+}
+</script>
+
+</body>
+</html>
